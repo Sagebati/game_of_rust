@@ -1,7 +1,20 @@
 [package]
-name = "chess"
+name = "game_of_rust"
 version = "0.1.0"
 authors = ["Samuel Batissou <samuelbatissou@gmail.com>"]
 
 [dependencies]
-sdl2 = "0.31"
+rand = "0.4"
+num = "0.1"
+[dependencies.sdl2]
+version = "0.31"
+default-features = false
+features = ["image","gfx"]
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[[bin]]
+name = "demo"
+path = "src/demo.rs"
