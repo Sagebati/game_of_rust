@@ -11,7 +11,6 @@ use sdl2::gfx::primitives::DrawRenderer;
 use rand::Rng;
 
 #[macro_use]
-
 const HEIGHT: usize = 800;
 const WIDTH: usize = 600;
 const SIZE: usize = (HEIGHT * WIDTH);
@@ -52,22 +51,20 @@ fn main() {
                     } else if keycode == Keycode::Space {
                         println!("space down");
 
-                        loop {
-                            canvas.set_draw_color(pixels::Color::RGB(0, 0, 0));
-                            canvas.clear();
+                        canvas.set_draw_color(pixels::Color::RGB(0, 0, 0));
+                        canvas.clear();
 
-                            canvas.set_draw_color(pixels::Color::RGB(255, 255, 255));
-                            for i in 0..SIZE {
-                                if board[i] == true {
-                                    let (x, y) = get_2d_from_1d(i);
-                                    canvas.draw_point((x, y));
-                                    //canvas.pixel(x as i16, y as i16, pixels::Color::RGB(255, 255, 255));
-                                }
+                        canvas.set_draw_color(pixels::Color::RGB(255, 255, 255));
+                        for i in 0..SIZE {
+                            if board[i] == true {
+                                let (x, y) = get_2d_from_1d(i);
+                                canvas.draw_point((x, y));
+                                //canvas.pixel(x as i16, y as i16, pixels::Color::RGB(255, 255, 255));
                             }
-                            board = cal_next_board(&board);
-
-                            canvas.present();
                         }
+                        board = cal_next_board(&board);
+
+                        canvas.present();
                     }
                 }
                 _ => {}
