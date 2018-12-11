@@ -1,84 +1,84 @@
+extern crate rand;
+
+use rand::Rng;
+
+
 pub struct Life {
-    t: [bool; SIZE]
+    pub tab: Vec<bool>,
+    pub size: usize,
+    pub height: usize,
+    pub width: usize,
 }
 
+pub fn count_bit(arr: [bool; 8]) -> u8 {
+    let mut count = 0;
+    for b in arr.iter() {
+        if *b == true {
+            count += 1
+        }
+    }
+    count
+}
+
+pub fn get_2d_from_1d(i: usize, w: usize, h: usize) -> (i32, i32) {
+    let x = (i / w) as i32;
+    let y = (i % h) as i32;
+
+    (x, y)
+}
 
 impl Life {
-    pub fn cal_next_board(&self) {
-        let mut res = [false; SIZE];
-        for i in 0..SIZE {
-            let neighbours = get_neigbours(board, i);
-            let cc = count_bit(neighbours);
-            if cc == 2 {
-                res[i] = true
-            }
-            if cc == 3 && self.t[i] == true {
-                res[i] = true
-            }
-            if (cc > 3 || cc < 2) && self.t[i] == true {
-                res[i] = false
+    pub fn randomise(&mut self) {
+        for i in 0..self.size {
+            self.tab[i] = if rand::thread_rng().gen_range(0, 2) == 1
+                { true } else { false };
+        }
+    }
+
+    pub fn next_iter(&mut self) {
+        //let mut res = vec![false; self.size];
+        for i in 0..self.size {
+            let cc = count_bit(self.get_neighbors(i));
+            if cc == 3 {
+                self.tab[i] = true
+            } else if (cc > 3 || cc < 2) && self.tab[i] == true {
+                self.tab[i] = false
             }
         }
-        self.t = res;
+        //self.tab = res;
     }
-    fn count_bit(arr: [bool; 8]) -> u8 {
-        let mut count = 0;
-        for b in arr.iter() {
-            if *b == true {
-                count += 1
-            }
-        }
-        return count;
-    }
-    fn get(&self, x: usize, y: usize) -> bool {
-        let test = (WIDTH * x + y) as usize;
-        if test < SIZE {
-            return board[WIDTH * x + y];
+
+    fn get(&self, x: i32, y: i32) -> bool {
+        let index = (self.width as i32) * x + y;
+        if index < self.size as i32 && index >= 0 {
+            self.tab[index as usize]
         } else {
-            return false;
+            false
         }
     }
-    fn get_neigbours(&self, i: usize) -> [bool; 8] {
+
+    fn get_neighbors(&self, i: usize) -> [bool; 8] {
+        let (x, y) = self.get_2d_from_1d(i);
+
         let mut res = [false; 8];
-        let x = i / WIDTH;
-        let y = i % HEIGHT;
 
-        res[0] = get(board, x, y + 1);
-        res[2] = get(board, x + 1, y + 1);
-        res[6] = get(board, x + 1, y);
-        if y != 0 {
-            res[1] = get(board, x, y - 1);
-            res[3] = get(board, x + 1, y - 1);
-            if x != 0 {
-                res[5] = get(board, x - 1, y - 1);
-            } else {
-                res[5] = false;
-            }
-        } else {
-            res[0] = false;
-            res[3] = false;
-            res[5] = false;
-        }
-        if x != 0 {
-            res[4] = get(board, x - 1, y + 1);
-            res[7] = get(board, x - 1, y);
-        } else {
-            res[4] = false;
-            res[7] = false;
-        }
+        res[0] = self.get(x, y + 1);
+        res[2] = self.get(x + 1, y + 1);
+        res[6] = self.get(x + 1, y);
+        res[1] = self.get(x, y - 1);
+        res[3] = self.get(x + 1, y - 1);
+        res[5] = self.get(x - 1, y - 1);
+        res[4] = self.get(x - 1, y + 1);
+        res[7] = self.get(x - 1, y);
 
-        return res;
+        res
     }
 
-    pub fn randomise(&self) {
-        for i in 0..SIZE {
-            self[i] = if rand::thread_rng().gen_range(0, 300) == 1 { true } else { false };
-        }
-    }
 
-    fn get_2d_from_1d(i: usize) -> (i32, i32) {
-        let x: i32 = (i / WIDTH) as i32;
-        let y: i32 = (i % HEIGHT) as i32;
-        return (x, y);
+    fn get_2d_from_1d(&self, i: usize) -> (i32, i32) {
+        get_2d_from_1d(i, self.width, self.height)
     }
 }
+
+
+
